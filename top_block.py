@@ -196,6 +196,7 @@ class top_block(gr.top_block, Qt.QWidget):
         	1, 11025, 2400, 100, firdes.WIN_HAMMING, 6.76))
         self.fractional_interpolator_xx_0_0 = filter.fractional_interpolator_ff(0, 4.8/4.16)
         self.fractional_interpolator_xx_0 = filter.fractional_interpolator_ff(0, 1.1484375)
+        self.blocks_wavfile_sink_0 = blocks.wavfile_sink(file_path+".wav", 1, 11025, 8)
         self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
         self.blocks_float_to_uchar_0 = blocks.float_to_uchar()
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
@@ -242,6 +243,7 @@ class top_block(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_float_to_uchar_0, 0))
         self.connect((self.fractional_interpolator_xx_0, 0), (self.blocks_deinterleave_0, 0))
         self.connect((self.fractional_interpolator_xx_0_0, 0), (self.analog_rail_ff_0, 0))
+        self.connect((self.low_pass_filter_0, 0), (self.blocks_wavfile_sink_0, 0))
         self.connect((self.low_pass_filter_0, 0), (self.fractional_interpolator_xx_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.analog_fm_demod_cf_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.analog_fm_demod_cf_0_0, 0))
@@ -293,6 +295,7 @@ class top_block(gr.top_block, Qt.QWidget):
 
     def set_file_path(self, file_path):
         self.file_path = file_path
+        self.blocks_wavfile_sink_0.open(self.file_path+".wav")
         self.blocks_file_sink_0.open(self.file_path)
 
 

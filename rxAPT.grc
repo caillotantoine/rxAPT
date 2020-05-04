@@ -227,7 +227,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(168, 12)</value>
+      <value>(160, 36)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -239,7 +239,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>"/Users/caillotantoine/"</value>
+      <value>os.path.expanduser("~")</value>
     </param>
   </block>
   <block>
@@ -250,7 +250,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>10</value>
+      <value>20</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -294,7 +294,7 @@
     </param>
     <param>
       <key>stop</key>
-      <value>20</value>
+      <value>40</value>
     </param>
     <param>
       <key>rangeType</key>
@@ -356,7 +356,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(536, 532)</value>
+      <value>(560, 460)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -486,7 +486,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 12)</value>
+      <value>(776, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -533,7 +533,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(568, 484)</value>
+      <value>(592, 412)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -627,11 +627,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(864, 368)</value>
+      <value>(808, 312)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>180</value>
     </param>
     <param>
       <key>id</key>
@@ -674,11 +674,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(560, 352)</value>
+      <value>(1112, 296)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>180</value>
     </param>
     <param>
       <key>id</key>
@@ -733,7 +733,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 488)</value>
+      <value>(1024, 416)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -776,11 +776,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(696, 352)</value>
+      <value>(952, 296)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>180</value>
     </param>
     <param>
       <key>id</key>
@@ -819,7 +819,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(832, 504)</value>
+      <value>(856, 432)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -858,7 +858,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(720, 488)</value>
+      <value>(744, 416)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -887,6 +887,53 @@
     <param>
       <key>vlen</key>
       <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_wavfile_sink</key>
+    <param>
+      <key>bits_per_sample</key>
+      <value>8</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>file</key>
+      <value>file_path+".wav"</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1104, 80)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_wavfile_sink_0</value>
+    </param>
+    <param>
+      <key>nchan</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>samp_rate</key>
+      <value>11025</value>
     </param>
   </block>
   <block>
@@ -960,11 +1007,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1024, 356)</value>
+      <value>(584, 300)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>180</value>
     </param>
     <param>
       <key>id</key>
@@ -1020,6 +1067,37 @@
     <param>
       <key>import</key>
       <value>from datetime import datetime</value>
+    </param>
+  </block>
+  <block>
+    <key>import</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(120, 108)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>import_1</value>
+    </param>
+    <param>
+      <key>import</key>
+      <value>import os.path</value>
     </param>
   </block>
   <block>
@@ -4493,6 +4571,12 @@
   <connection>
     <source_block_id>fractional_interpolator_xx_0_0</source_block_id>
     <sink_block_id>analog_rail_ff_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>low_pass_filter_0</source_block_id>
+    <sink_block_id>blocks_wavfile_sink_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
