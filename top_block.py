@@ -33,6 +33,7 @@ from gnuradio.eng_option import eng_option
 from gnuradio.filter import firdes
 from gnuradio.qtgui import Range, RangeWidget
 from optparse import OptionParser
+import os.path
 import sip
 import sys
 import time
@@ -69,18 +70,22 @@ class top_block(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.path_to_save_dir = path_to_save_dir = "/Users/caillotantoine/"
+        self.path_to_save_dir = path_to_save_dir = os.path.expanduser("~/Desktop")
         self.samp_rate = samp_rate = 2205000
-        self.rf_gain = rf_gain = 10
+        self.rf_gain = rf_gain = 20
+        self.if_gain = if_gain = 40
         self.freq = freq = 137.62e6
-        self.file_path = file_path = path_to_save_dir + "/APT_" + datetime.now().strftime("%d%m%Y_%H%M")+".dat"
+        self.file_path = file_path = path_to_save_dir + "/APT_" + datetime.now().strftime("%d%m%Y_%H%M")
 
         ##################################################
         # Blocks
         ##################################################
-        self._rf_gain_range = Range(1, 20, 1, 10, 200)
+        self._rf_gain_range = Range(0, 45, 5, 20, 200)
         self._rf_gain_win = RangeWidget(self._rf_gain_range, self.set_rf_gain, 'RF Gain', "counter_slider", float)
         self.top_grid_layout.addWidget(self._rf_gain_win)
+        self._if_gain_range = Range(1, 80, 5, 40, 200)
+        self._if_gain_win = RangeWidget(self._if_gain_range, self.set_if_gain, 'IF Gain', "counter_slider", float)
+        self.top_grid_layout.addWidget(self._if_gain_win)
         self._freq_options = (137.62e6, 137.9125e6, 137.1e6, 99.8e6, )
         self._freq_labels = ('NOAA-15 (137.62MHz)', 'NOAA-18 (137.9125MHz)', 'NOAA-19 (137.1MHz)', 'Test FM', )
         self._freq_tool_bar = Qt.QToolBar(self)
@@ -113,98 +118,44 @@ class top_block(gr.top_block, Qt.QWidget):
                 taps=None,
                 fractional_bw=None,
         )
-        self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
-        	1024, #size
-        	firdes.WIN_BLACKMAN_hARRIS, #wintype
-        	0, #fc
-        	samp_rate, #bw
-        	"", #name
-                1 #number of inputs
-        )
-        self.qtgui_waterfall_sink_x_0.set_update_time(0.10)
-        self.qtgui_waterfall_sink_x_0.enable_grid(False)
-        self.qtgui_waterfall_sink_x_0.enable_axis_labels(True)
-
-        if not True:
-          self.qtgui_waterfall_sink_x_0.disable_legend()
-
-        if "complex" == "float" or "complex" == "msg_float":
-          self.qtgui_waterfall_sink_x_0.set_plot_pos_half(not True)
-
-        labels = ['', '', '', '', '',
-                  '', '', '', '', '']
-        colors = [0, 0, 0, 0, 0,
-                  0, 0, 0, 0, 0]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-        for i in xrange(1):
-            if len(labels[i]) == 0:
-                self.qtgui_waterfall_sink_x_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_waterfall_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_waterfall_sink_x_0.set_color_map(i, colors[i])
-            self.qtgui_waterfall_sink_x_0.set_line_alpha(i, alphas[i])
-
-        self.qtgui_waterfall_sink_x_0.set_intensity_range(-140, 10)
-
-        self._qtgui_waterfall_sink_x_0_win = sip.wrapinstance(self.qtgui_waterfall_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_waterfall_sink_x_0_win)
-        self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
-        	1024, #size
+        self.qtgui_sink_x_0 = qtgui.sink_c(
+        	1024, #fftsize
         	firdes.WIN_BLACKMAN_hARRIS, #wintype
         	freq, #fc
         	samp_rate, #bw
         	"", #name
-        	1 #number of inputs
+        	True, #plotfreq
+        	True, #plotwaterfall
+        	True, #plottime
+        	True, #plotconst
         )
-        self.qtgui_freq_sink_x_0.set_update_time(0.10)
-        self.qtgui_freq_sink_x_0.set_y_axis(-140, 10)
-        self.qtgui_freq_sink_x_0.set_y_label('Relative Gain', 'dB')
-        self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
-        self.qtgui_freq_sink_x_0.enable_autoscale(False)
-        self.qtgui_freq_sink_x_0.enable_grid(False)
-        self.qtgui_freq_sink_x_0.set_fft_average(1.0)
-        self.qtgui_freq_sink_x_0.enable_axis_labels(True)
-        self.qtgui_freq_sink_x_0.enable_control_panel(False)
+        self.qtgui_sink_x_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_win = sip.wrapinstance(self.qtgui_sink_x_0.pyqwidget(), Qt.QWidget)
+        self.top_grid_layout.addWidget(self._qtgui_sink_x_0_win)
 
-        if not True:
-          self.qtgui_freq_sink_x_0.disable_legend()
+        self.qtgui_sink_x_0.enable_rf_freq(False)
 
-        if "complex" == "float" or "complex" == "msg_float":
-          self.qtgui_freq_sink_x_0.set_plot_pos_half(not True)
 
-        labels = ['', '', '', '', '',
-                  '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-                  "magenta", "yellow", "dark red", "dark green", "dark blue"]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-        for i in xrange(1):
-            if len(labels[i]) == 0:
-                self.qtgui_freq_sink_x_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_freq_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_freq_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_freq_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_freq_sink_x_0.set_line_alpha(i, alphas[i])
 
-        self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win)
+        self.low_pass_filter_1 = filter.fir_filter_ccf(1, firdes.low_pass(
+        	1, samp_rate, 40000, 4100, firdes.WIN_HAMMING, 6.76))
         self.low_pass_filter_0 = filter.fir_filter_fff(1, firdes.low_pass(
-        	1, 11025, 2400, 100, firdes.WIN_HAMMING, 6.76))
+        	5, 11025, 2400, 100, firdes.WIN_HAMMING, 6.76))
         self.fractional_interpolator_xx_0_0 = filter.fractional_interpolator_ff(0, 4.8/4.16)
         self.fractional_interpolator_xx_0 = filter.fractional_interpolator_ff(0, 1.1484375)
+        self.blocks_wavfile_sink_1 = blocks.wavfile_sink(file_path+"_rawIQ.wav", 2, samp_rate, 8)
+        self.blocks_wavfile_sink_0_0 = blocks.wavfile_sink(file_path+".wav", 1, 4160, 8)
         self.blocks_wavfile_sink_0 = blocks.wavfile_sink(file_path+".wav", 1, 11025, 8)
         self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((if_gain, ))
         self.blocks_float_to_uchar_0 = blocks.float_to_uchar()
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, file_path, False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, file_path+".dat", False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_deinterleave_0 = blocks.deinterleave(gr.sizeof_float*1, 1)
         self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
-        self.audio_sink_0 = audio.sink(44100, '', True)
+        self.blocks_complex_to_float_0 = blocks.complex_to_float(1)
+        self.audio_sink_0 = audio.sink(44100, '', False)
         self.analog_rail_ff_0 = analog.rail_ff(0, 1)
         self.analog_fm_demod_cf_0_0 = analog.fm_demod_cf(
         	channel_rate=44100,
@@ -232,24 +183,29 @@ class top_block(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.connect((self.analog_const_source_x_0, 0), (self.blocks_multiply_xx_0, 1))
+        self.connect((self.analog_fm_demod_cf_0, 0), (self.blocks_wavfile_sink_0, 0))
         self.connect((self.analog_fm_demod_cf_0, 0), (self.low_pass_filter_0, 0))
         self.connect((self.analog_fm_demod_cf_0_0, 0), (self.audio_sink_0, 0))
         self.connect((self.analog_rail_ff_0, 0), (self.blocks_multiply_xx_0, 0))
+        self.connect((self.blocks_complex_to_float_0, 1), (self.blocks_wavfile_sink_1, 1))
+        self.connect((self.blocks_complex_to_float_0, 0), (self.blocks_wavfile_sink_1, 0))
         self.connect((self.blocks_complex_to_mag_0, 0), (self.fractional_interpolator_xx_0_0, 0))
         self.connect((self.blocks_deinterleave_0, 0), (self.blocks_float_to_complex_0, 0))
         self.connect((self.blocks_deinterleave_0, 1), (self.blocks_float_to_complex_0, 1))
         self.connect((self.blocks_float_to_complex_0, 0), (self.blocks_complex_to_mag_0, 0))
         self.connect((self.blocks_float_to_uchar_0, 0), (self.blocks_file_sink_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.low_pass_filter_1, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_sink_x_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_float_to_uchar_0, 0))
         self.connect((self.fractional_interpolator_xx_0, 0), (self.blocks_deinterleave_0, 0))
         self.connect((self.fractional_interpolator_xx_0_0, 0), (self.analog_rail_ff_0, 0))
-        self.connect((self.low_pass_filter_0, 0), (self.blocks_wavfile_sink_0, 0))
+        self.connect((self.fractional_interpolator_xx_0_0, 0), (self.blocks_wavfile_sink_0_0, 0))
         self.connect((self.low_pass_filter_0, 0), (self.fractional_interpolator_xx_0, 0))
+        self.connect((self.low_pass_filter_1, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.analog_fm_demod_cf_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.analog_fm_demod_cf_0_0, 0))
-        self.connect((self.uhd_usrp_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
-        self.connect((self.uhd_usrp_source_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
-        self.connect((self.uhd_usrp_source_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.blocks_complex_to_float_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.blocks_multiply_const_vxx_0, 0))
 
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "top_block")
@@ -261,7 +217,7 @@ class top_block(gr.top_block, Qt.QWidget):
 
     def set_path_to_save_dir(self, path_to_save_dir):
         self.path_to_save_dir = path_to_save_dir
-        self.set_file_path(self.path_to_save_dir + "/APT_" + datetime.now().strftime("%d%m%Y_%H%M")+".dat")
+        self.set_file_path(self.path_to_save_dir + "/APT_" + datetime.now().strftime("%d%m%Y_%H%M"))
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -270,8 +226,8 @@ class top_block(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_bandwidth(self.samp_rate, 0)
-        self.qtgui_waterfall_sink_x_0.set_frequency_range(0, self.samp_rate)
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.freq, self.samp_rate)
+        self.qtgui_sink_x_0.set_frequency_range(self.freq, self.samp_rate)
+        self.low_pass_filter_1.set_taps(firdes.low_pass(1, self.samp_rate, 40000, 4100, firdes.WIN_HAMMING, 6.76))
 
     def get_rf_gain(self):
         return self.rf_gain
@@ -281,6 +237,13 @@ class top_block(gr.top_block, Qt.QWidget):
         self.uhd_usrp_source_0.set_gain(self.rf_gain, 0)
 
 
+    def get_if_gain(self):
+        return self.if_gain
+
+    def set_if_gain(self, if_gain):
+        self.if_gain = if_gain
+        self.blocks_multiply_const_vxx_0.set_k((self.if_gain, ))
+
     def get_freq(self):
         return self.freq
 
@@ -288,15 +251,17 @@ class top_block(gr.top_block, Qt.QWidget):
         self.freq = freq
         self._freq_callback(self.freq)
         self.uhd_usrp_source_0.set_center_freq(self.freq, 0)
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.freq, self.samp_rate)
+        self.qtgui_sink_x_0.set_frequency_range(self.freq, self.samp_rate)
 
     def get_file_path(self):
         return self.file_path
 
     def set_file_path(self, file_path):
         self.file_path = file_path
+        self.blocks_wavfile_sink_1.open(self.file_path+"_rawIQ.wav")
+        self.blocks_wavfile_sink_0_0.open(self.file_path+".wav")
         self.blocks_wavfile_sink_0.open(self.file_path+".wav")
-        self.blocks_file_sink_0.open(self.file_path)
+        self.blocks_file_sink_0.open(self.file_path+".dat")
 
 
 def main(top_block_cls=top_block, options=None):
